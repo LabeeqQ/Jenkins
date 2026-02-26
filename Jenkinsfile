@@ -11,6 +11,7 @@ pipeline {
         stage('Directory and File Operations') {
     steps {
         sh '''
+          cd /home  
           echo "Creating directory"
           mkdir labeeqsdir
 
