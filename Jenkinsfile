@@ -1,33 +1,78 @@
 pipeline {
 
-    /* Run everything inside a Docker container */
+    /* 1️⃣ Docker agent definition */
     agent {
         docker {
-            image 'alpine:latest'
+            image 'node:18-alpine'
+            args '-u root:root'
         }
     }
 
+    /* 2️⃣ Global environment variables */
+    environment {
+        APP_NAME = "sample-node-app"
+        APP_ENV  = "dev"
+    }
+
+    /* 3️⃣ Pipeline-level options */
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    /* 4️⃣ Stages */
     stages {
 
-        stage('Hello') {
+        stage('Checkout Code') {
             steps {
-                echo 'Pipeline started 🚀'
+                echo "📥 Checking out source code"
+                checkout scm
             }
         }
 
-        stage('Run inside Docker') {
+        stage('Install Dependencies') {
             steps {
+                echo "📦 Installing dependencies"
                 sh '''
-                  echo "I am running inside a Docker container"
-                  uname -a
+                  node --version
+                  npm --version
+                  npm install
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo "🧪 Running tests"
+                sh '''
+                  echo "Simulating tests..."
+                  sleep 2
+                '''
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                echo "🏗️ Building application"
+                sh '''
+                  mkdir -p build
+                  echo "Build completed for ${APP_NAME}" > build/output.txt
                 '''
             }
         }
     }
 
+    /* 5️⃣ Post-build actions */
     post {
+        success {
+            echo "✅ Pipeline completed successfully"
+        }
+        failure {
+            echo "❌ Pipeline failed"
+        }
         always {
-            echo 'Pipeline finished ✅'
+            echo "🧹 Cleaning workspace"
+            cleanWs()
         }
     }
 }
