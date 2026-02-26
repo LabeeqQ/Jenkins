@@ -7,7 +7,8 @@ pipeline {
             args '-u root:root'
         }
     }
-stage('Directory and File Operations') {
+    stages{
+        stage('Directory and File Operations') {
     steps {
         sh '''
           echo "Creating directory"
@@ -23,5 +24,6 @@ stage('Directory and File Operations') {
           ls -R labeeqdir_renamed
         '''
     }
+}
 }
 }
